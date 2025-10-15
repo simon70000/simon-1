@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <h1>Welcome, {{ g.user['student_id'] }}!</h1>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <h2>Upcoming Events</h2>
+        <ul>
+            {% for event in events %}
+                <li><strong>{{ event['title'] }}</strong> - {{ event['description'] }} (Register by: {{ event['registration_deadline'] }})</li>
+            {% else %}
+                <li>No upcoming events.</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Submit Event Participation Request</h2>
+        <form action="{{ url_for('submit_request') }}" method="post">
+            <input type="text" name="event_title" placeholder="Event Title" required><br>
+            <input type="text" name="department" placeholder="Department" required><br>
+            <input type="text" name="student_id" value="{{ g.user['student_id'] }}" readonly><br>
+            <textarea name="event_description" placeholder="Event Description" required></textarea><br>
+            <label for="rehearsal_date">Rehearsal Date:</label>
+            <input type="date" name="rehearsal_date" required><br>
+            <textarea name="participants_names" placeholder="Participants' Names (comma-separated)" required></textarea><br>
+            <label for="practice_timing">Practice Timing:</label>
+            <input type="time" name="practice_timing" required><br>
+            <button type="submit" class="btn">Submit Request</button>
+        </form>
+    </div>
+</body>
+</html>
