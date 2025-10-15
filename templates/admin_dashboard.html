@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ g.admin['username'] }}!</h1>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+        <h2>Event Requests</h2>
+        <table>
+            <tr>
+                <th>Event Title</th>
+                <th>Department</th>
+                <th>Student ID</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            {% for request in requests %}
+                <tr>
+                    <td>{{ request['event_title'] }}</td>
+                    <td>{{ request['department'] }}</td>
+                    <td>{{ request['student_id'] }}</td>
+                    <td>{{ request['status'] }}</td>
+                    <td>
+                        {% if request['status'] == 'pending' %}
+                            <a href="{{ url_for('update_request_status', id=request['id'], status='approved') }}">Approve</a> |
+                            <a href="{{ url_for('update_request_status', id=request['id'], status='rejected') }}">Reject</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">No event requests found.</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h2>Manage Events</h2>
+        <h3>Add Event</h3>
+        <form action="{{ url_for('add_event') }}" method="post">
+            <input type="text" name="title" placeholder="Event Title" required><br>
+            <textarea name="description" placeholder="Event Description" required></textarea><br>
+            <label for="registration_deadline">Registration Deadline:</label>
+            <input type="date" name="registration_deadline" required><br>
+            <button type="submit" class="btn">Add Event</button>
+        </form>
+
+        <h3>Existing Events</h3>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Registration Deadline</th>
+                <th>Action</th>
+            </tr>
+            {% for event in events %}
+                <tr>
+                    <td>{{ event['title'] }}</td>
+                    <td>{{ event['description'] }}</td>
+                    <td>{{ event['registration_deadline'] }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_event', id=event['id']) }}">Edit</a> |
+                        <a href="{{ url_for('delete_event', id=event['id']) }}">Delete</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">No events found.</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
